@@ -9,26 +9,42 @@ def connect():
             database="hamburg_inn"
         )
 
-### GETS THE LIST OF ALL RELATIONS WITHIN A CERTAIN VIEW
-def get_view(view_name: str):
-    # Define query
-    query=f"SELECT TABLE_NAME FROM hamburg_inn.VIEW_TABLE_USAGE WHERE VIEW_NAME = {view_name};"
+### GET PRIVILEGES FOR A SPECIFIC ROLE
+### RETURNS A DICTIONARY WITH FORMAT { Relation_Name: Privileges}
+def get_privileges(user_name: str):
+    query=f"SHOW GRANTS FOR '{user_name}';"
+
+    relation_privileges = {}
 
     # connect to database, open cursor, and execute query
     with connect() as mycon: # handle opening and closing connection
         with mycon.cursor() as cursor:
             cursor.execute(query)
-            rows = cursor.fetchall() # fetch all rows from the last executed statement
-            return rows
+            grants = cursor.fetchall()
+            
+            # loop through grants, and use split functions to find user privileges for corresponding relation
+            # add result to relation_privileges dictionary
+            for grant in grants:
+                grant_statement = grant[0];
+                if "`hamburg_inn`.`" in grant_statement and "` TO" in grant_statement:
+                    relation = grant_statement.split("`hamburg_inn`.`")[1].split("` TO")[0]
+                    relation = relation.title() # make sure relation is in title case
+                    privileges = grant_statement.split("GRANT")[1].split("ON")[0]
+                    relation_privileges[relation] = privileges
 
-### GETS ALL THE RELATIONS IN THE VIEW ALONGSIDE THEIR INTERNAL DATA
-def get_all_relations_from_view(view_name: str):
-    relations = get_view(view_name)
+            return relation_privileges
+
+
+### GETS ALL THE RELATIONS FOR A ROLE ALONGSIDE EACH RELATION'S INTERNAL DATA
+### RETURNS A DICTIONARY
+def get_all_relations_for_role(role_name: str):
+    privileges = get_privileges(role_name)
     results = {} # results is a dictionary
 
     # define the dictionary - key is relation, value is relation data
-    for rel in relations:
-        results[rel] = get_relation(rel)
+    for rel in privileges.keys():
+        if "Record_Daily_Key_Order_Times" not in rel and "Get_Event_Most_Popular_Item" not in rel:
+            results[rel] = get_relation(rel)
 
     return results
         
@@ -100,3 +116,13 @@ def delete_from_relation(rel: str, delete_params: dict):
 # print(get_relation("Employee"))
 # delete_from_relation("Employee", {"employee_id": 8})
 # print(get_relation("Employee"))
+
+# Print Privileges
+privileges = get_privileges("manager_role")
+print(privileges.keys())
+# print(type(privileges[1][0]))
+# result = privileges[1][0]
+# print(type(result))
+# result = result.split("GRANT")[1].split("ON")[0]
+# print(result.strip())
+print(get_all_relations_for_role("manager_role"))

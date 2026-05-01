@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 # Router Imports
-from routers.crud_router import manager_router
+from routers.crud_router import crud_router
 
 
 app = FastAPI(

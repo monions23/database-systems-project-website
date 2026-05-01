@@ -1,4 +1,7 @@
+from locale import D_FMT
+
 import mysql.connector
+import pandas as pd
 
 # Return SQL connector
 def connect():
@@ -36,7 +39,7 @@ def get_privileges(user_name: str):
 
 
 ### GETS ALL THE RELATIONS FOR A ROLE ALONGSIDE EACH RELATION'S INTERNAL DATA
-### RETURNS A DICTIONARY
+### RETURNS A DICTIONARY IN FORMAT { ROLE: RELATIONS }
 def get_all_relations_for_role(role_name: str):
     privileges = get_privileges(role_name)
     results = {} # results is a dictionary
@@ -53,18 +56,20 @@ def insert_into_relation(rel: str, data: dict):
 
     # preprocess data
     cols = ", ".join(data.keys())
-    values = ", ".join(f"{v}" for v in data.values())
+    placeholders = ", ".join(["%s"] * len(data))
+    values = list(data.values())
 
     # define query
-    query = f"INSERT INTO `{rel}` ({cols}) VALUES ({values})"
+    query = f"INSERT INTO `{rel}` ({cols}) VALUES ({placeholders})"
 
     # connect to database, open cursor, and execute query
     with connect() as mycon:
         with mycon.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query, values)   # <-- THIS IS REQUIRED
         mycon.commit()
         
 ### RETRIEVE OPERATION FUNCTION
+### RETURNS A PANDAS DATAFRAME AS A DICT
 def get_relation(rel: str, select_params: str = "*"):
 
     # define query
@@ -74,8 +79,10 @@ def get_relation(rel: str, select_params: str = "*"):
     with connect() as mycon:
         with mycon.cursor() as cursor:
             cursor.execute(query)
+            col_name = cursor.column_names # get column names
             rows = cursor.fetchall() # fetch all rows from the last executed statement
-            return rows
+            relation_df = pd.DataFrame(rows, columns=col_name)
+            return relation_df.to_dict(orient = "split")
 
 ### UPDATE OPERATION FUNCTION
 def update_relation(rel: str, updated_items: dict, update_params: dict, ):
@@ -118,11 +125,12 @@ def delete_from_relation(rel: str, delete_params: dict):
 # print(get_relation("Employee"))
 
 # Print Privileges
-privileges = get_privileges("manager_role")
-print(privileges.keys())
+# privileges = get_privileges("manager_role")
+# print(privileges.keys())
 # print(type(privileges[1][0]))
 # result = privileges[1][0]
 # print(type(result))
 # result = result.split("GRANT")[1].split("ON")[0]
 # print(result.strip())
-print(get_all_relations_for_role("manager_role"))
+# print(get_all_relations_for_role("manager_role"))
+get_relation("Appetizer")

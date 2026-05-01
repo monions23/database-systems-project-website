@@ -12,11 +12,13 @@ app = FastAPI(
     version = "0.136.1"
 )
 
+app.include_router(crud_router, prefix="/crud", tags=["Manager"])
+
+
 @app.get("/")
 async def home():
     return FileResponse("./frontend/index.html")
 
-app.include_router(crud_router, prefix="/crud", tags=["Manager"])
 
 app.mount("/", StaticFiles(directory="./frontend"), name="static")
 

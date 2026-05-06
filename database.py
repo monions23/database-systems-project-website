@@ -86,31 +86,33 @@ def get_relation(rel: str, select_params: str = "*"):
 
 ### UPDATE OPERATION FUNCTION
 def update_relation(rel: str, updated_items: dict, update_params: dict, ):
-    #  preprocess data
-    set_clause = ", ".join(f"{k} = {v}" for k, v in updated_items.items())
-    where_clause = ", ".join(f"{k} = {v}" for k, v in update_params.items())
+    # FIX: use parameterized queries (%s placeholders) to prevent SQL injection and handle quoted values
+    set_clause = ", ".join(f"{k} = %s" for k in updated_items.keys())
+    where_clause = " AND ".join(f"{k} = %s" for k in update_params.keys())
+    values = list(updated_items.values()) + list(update_params.values())
 
     # define query
-    query = f"UPDATE {rel} SET {set_clause} WHERE {where_clause}"
+    query = f"UPDATE `{rel}` SET {set_clause} WHERE {where_clause}"
 
     # connect to database, open cursor, and execute query
     with connect() as mycon:
         with mycon.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query, values)
         mycon.commit()
 
 ### DELETE OPERATION FUNCTION
 def delete_from_relation(rel: str, delete_params: dict):
-    # preprocess data
-    where_clause = ", ".join(f"{k} = {v}" for k, v in delete_params.items())
+    # FIX: use parameterized queries (%s placeholders) to prevent SQL injection and handle quoted values
+    where_clause = " AND ".join(f"{k} = %s" for k in delete_params.keys())
+    values = list(delete_params.values())
 
     # define query
-    query = f"DELETE FROM {rel} WHERE {where_clause}"
+    query = f"DELETE FROM `{rel}` WHERE {where_clause}"
 
     # connect to database, open cursor, and execute query
     with connect() as mycon:
         with mycon.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query, values)
         mycon.commit()
 
 
@@ -133,4 +135,4 @@ def delete_from_relation(rel: str, delete_params: dict):
 # result = result.split("GRANT")[1].split("ON")[0]
 # print(result.strip())
 # print(get_all_relations_for_role("manager_role"))
-get_relation("Appetizer")
+# FIX: removed stray get_relation("Appetizer") call that ran on every import

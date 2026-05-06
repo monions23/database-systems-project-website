@@ -25,12 +25,14 @@ async def insert_view_data(rel_name: str, data: dict):
 
 
 # Update a record
-@crud_router.put("/{tuple_key}")
+# FIX: path was /{tuple_key} but function uses rel_name — changed to match
+@crud_router.put("/{rel_name}")
 async def update_view_data(rel_name: str, items_to_update: dict, update_conditions: dict):
     update_relation(rel_name, items_to_update, update_conditions)
 
 
 # Delete a record
-@crud_router.delete("/{tuple_key}")
-async def delete_view_data(rel: str, delete_conditions: dict ):
-    delete_from_relation(rel, delete_conditions)
+# FIX: path was /{tuple_key} and param was rel — changed both to rel_name for consistency
+@crud_router.delete("/{rel_name}")
+async def delete_view_data(rel_name: str, delete_conditions: dict):
+    delete_from_relation(rel_name, delete_conditions)

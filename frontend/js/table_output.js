@@ -108,6 +108,10 @@ async function build_relation(relation) {
     )
     .join("");
 
+  // FIX: remove existing wrapper for this relation before appending to prevent duplicates on re-render
+  const existing = tableDiv.querySelector(`.table-${relation}`);
+  if (existing) existing.remove();
+
   tableDiv.innerHTML += `
     <div class='table-${relation}'>
         <h4>${relation}</h4>
@@ -140,7 +144,8 @@ async function buildAddModal(relation) {
     </div>`,
   );
 
-  modalContentDiv.innerHTML = modalInfo;
+  // FIX: modalInfo is an array — .join("") prevents literal commas appearing between form fields
+  modalContentDiv.innerHTML = modalInfo.join("");
 }
 
 /* See if user has insert privileges, and if so, return available button */
@@ -174,12 +179,11 @@ async function getUpdateDeleteHTML(relation) {
   console.log(privileges);
   var innerHTML = "";
 
+  // FIX: removed dead modal wiring (modal-edit never existed); use onclick handlers instead
   if (privileges[relation].includes("UPDATE")) {
     innerHTML += `
             <button class="btn btn-primary btn-sm me-2"
-              data-bs-toggle="modal"
-              data-bs-target="#modal-edit"
-              data-relation="${relation}">
+              onclick="handleEdit('${relation}')">
               Edit
             </button>
         `;
@@ -187,7 +191,7 @@ async function getUpdateDeleteHTML(relation) {
 
   if (privileges[relation].includes("DELETE")) {
     innerHTML += `
-            <button class="btn btn-danger btn-sm" data-relation="${relation}">
+            <button class="btn btn-danger btn-sm" onclick="handleDelete('${relation}')">
               Delete
             </button>
         `;
@@ -209,4 +213,46 @@ async function getPrivileges(role_name) {
   }
 
   return data;
+}
+
+// FIX: delete handler — confirms, prompts for PK column/value, calls DELETE endpoint, refreshes table
+async function handleDelete(relation) {
+  if (!confirm(`Delete a row from ${relation}?`)) return;
+  const pk_col = prompt("Primary key column name:");
+  if (!pk_col) return;
+  const pk_val = prompt("Primary key value:");
+  if (pk_val === null) return;
+
+  const delete_conditions = { [pk_col]: pk_val };
+
+  await fetch(API + "/" + relation, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(delete_conditions),
+  });
+
+  build_relation(relation);
+}
+
+// FIX: edit handler — prompts for PK and one field to update, calls PUT endpoint, refreshes table
+async function handleEdit(relation) {
+  const pk_col = prompt("Primary key column name:");
+  if (!pk_col) return;
+  const pk_val = prompt("Primary key value:");
+  if (pk_val === null) return;
+  const field = prompt("Column to update:");
+  if (!field) return;
+  const value = prompt(`New value for ${field}:`);
+  if (value === null) return;
+
+  const items_to_update = { [field]: value };
+  const update_conditions = { [pk_col]: pk_val };
+
+  await fetch(API + "/" + relation, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items_to_update, update_conditions }),
+  });
+
+  build_relation(relation);
 }

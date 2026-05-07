@@ -8,7 +8,7 @@ def connect():
     return mysql.connector.connect(
             host="localhost",  
             user="root",
-            password="VeblenAdams2005**",
+            password="Xutax#39865452!",
             database="hamburg_inn"
         )
 
@@ -71,7 +71,8 @@ def insert_into_relation(rel: str, data: dict):
 ### RETRIEVE OPERATION FUNCTION
 ### RETURNS A PANDAS DATAFRAME AS A DICT
 def get_relation(rel: str, select_params: str = "*"):
-
+    if rel == "Customer_Transaction" and select_params == "*":
+        select_params = "transaction_id, timestamp, total_amount, payment_method, employee_id, tips, status"
     # define query
     query = f"SELECT {select_params} FROM `{rel}`"
 

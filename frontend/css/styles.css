@@ -318,3 +318,13 @@ thead th {
 .home-link:hover {
   color: #ffcd00;
 }
+
+.hamburg-landing {
+  background-color: #ffcd00;
+  color: #000000;
+}
+
+.hamburg-landing:hover {
+  background-color: #000000;
+  color: #ffcd00;
+}

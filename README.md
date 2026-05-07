@@ -25,14 +25,14 @@ First, create a virtual environment in your project folder and activate it.
 On Mac:
 
 ```powershell
-python -m venv venv
+python -m venv venv [if not already created]
 source venv/bin/activate
 ```
 
 On Windows:
 
 ```powershell
-python -m venv venv
+python -m venv venv [if not already created]
 source .venv/Scripts/activate
 ```
 
@@ -45,5 +45,5 @@ pip install -r requirements.txt
 To run the app, run the following command:
 
 ```powershell
-uvicorn main:app
+uvicorn main:app --reload
 ```

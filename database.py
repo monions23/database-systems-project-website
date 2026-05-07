@@ -8,7 +8,7 @@ def connect():
     return mysql.connector.connect(
             host="localhost",  
             user="root",
-            password="PASSWORDHERE",
+            password="VeblenAdams2005**",
             database="hamburg_inn"
         )
 
@@ -28,13 +28,14 @@ def get_privileges(user_name: str):
             # loop through grants, and use split functions to find user privileges for corresponding relation
             # add result to relation_privileges dictionary
             for grant in grants:
-                grant_statement = grant[0];
+                grant_statement = grant[0]
                 if "`hamburg_inn`.`" in grant_statement and "` TO" in grant_statement:
                     relation = grant_statement.split("`hamburg_inn`.`")[1].split("` TO")[0]
                     relation = relation.title() # make sure relation is in title case
                     privileges = grant_statement.split("GRANT")[1].split("ON")[0]
                     relation_privileges[relation] = privileges
 
+            print(relation_privileges)
             return relation_privileges
 
 
@@ -135,4 +136,6 @@ def delete_from_relation(rel: str, delete_params: dict):
 # result = result.split("GRANT")[1].split("ON")[0]
 # print(result.strip())
 # print(get_all_relations_for_role("manager_role"))
-# FIX: removed stray get_relation("Appetizer") call that ran on every import
+# FIX: removed stray get_relation("Appetizer")
+
+get_privileges("manager_role") #call that ran on every import

@@ -4,13 +4,13 @@ let user_role = "";
 
 // Function to print each relation
 async function printRelationsForRole(role_name) {
+  modalContentDiv.innerHTML = "";
   user_role = role_name; // DEFINES GLOBALLY
   const data = await getRelationsForRole(role_name);
 
-  console.log(Object.keys(data).length);
-  for (const [key, innerDict] of Object.entries(data)) {
-    build_relation(key, role_name);
-  }
+  build_relation("Events");
+  build_relation("Customer_Transaction");
+  build_relation("Complete_Order_Summary");
 }
 
 // insert button event listener
@@ -108,11 +108,7 @@ async function build_relation(relation) {
     )
     .join("");
 
-  // FIX: remove existing wrapper for this relation before appending to prevent duplicates on re-render
-  const existing = tableDiv.querySelector(`.table-${relation}`);
-  if (existing) existing.remove();
-
-  tableDiv.innerHTML += `
+  let newHTML = `
     <div class='table-${relation}'>
         <h4>${relation}</h4>
         ${insertionHTML}
@@ -125,6 +121,13 @@ async function build_relation(relation) {
             </tbody>
         </table>
     </div>`;
+
+  const existing = tableDiv.querySelector(`.table-${relation}`);
+  if (existing) {
+    existing.outerHTML = newHTML; // replace in place, keeps position
+  } else {
+    tableDiv.innerHTML += newHTML; // first render, just append
+  }
 }
 
 /* BUILD ADD MODAL */

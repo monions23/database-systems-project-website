@@ -8,7 +8,7 @@ def connect():
     return mysql.connector.connect(
             host="localhost",  
             user="root",
-            password="Xutax#39865452!",
+            password="VeblenAdams2005**",
             database="hamburg_inn"
         )
 
@@ -141,14 +141,6 @@ def get_dashboard_stats():
         ORDER BY count DESC
         LIMIT 1;
     """
-    refills_query = """SELECT 
-            AVG(io.refill) AS avg_coffee_refills
-        FROM Individual_Order io
-        JOIN Menu_Item mi ON mi.menu_item_id = io.menu_item_id
-        WHERE mi.item_name = 'Coffee' AND io.refill = 'True';
-    """
-    addons_query = """
-        SELECT avg(add_ons_bought) AS avg_add_ons FROM Complete_Order_Summary;"""
     times_query = """
         SELECT
             DATE_FORMAT(
@@ -166,8 +158,6 @@ def get_dashboard_stats():
         df = pd.concat([
             pd.read_sql(customer_orders_query, mycon),
             pd.read_sql(popular_item_query, mycon),
-            pd.read_sql(refills_query, mycon),
-            pd.read_sql(addons_query, mycon),
             pd.read_sql(times_query, mycon),
         ], ignore_index=True)
         df = df.fillna(0)

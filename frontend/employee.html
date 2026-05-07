@@ -4,11 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hamburg Inn — Employee POS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
     <style>
-      body { background: #f4f6f8; }
-      .navbar-brand { font-weight: 600; letter-spacing: 0.01em; }
+      body {
+        background: #f4f6f8;
+      }
+      .navbar-brand {
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
       .section-card {
         background: #fff;
         border: 1px solid #dee2e6;
@@ -28,9 +40,15 @@
         font-size: 15px;
         font-weight: 600;
       }
-      .section-card .card-header .text-muted { font-size: 12px; }
-      .section-card .card-body { padding: 18px; }
-      table { font-size: 13px; }
+      .section-card .card-header .text-muted {
+        font-size: 12px;
+      }
+      .section-card .card-body {
+        padding: 18px;
+      }
+      table {
+        font-size: 13px;
+      }
       thead th {
         background: #f8f9fa;
         font-size: 11px;
@@ -45,12 +63,21 @@
         border-radius: 4px;
         border: 1px solid #dee2e6;
       }
-      .table-responsive table { margin-bottom: 0; }
-      #status-bar { font-size: 12px; }
- 
+      .table-responsive table {
+        margin-bottom: 0;
+      }
+      #status-bar {
+        font-size: 12px;
+      }
+
       /* POS Layout */
-      .pos-container { display: flex; gap: 24px; }
-      .pos-menu { flex: 1; }
+      .pos-container {
+        display: flex;
+        gap: 24px;
+      }
+      .pos-menu {
+        flex: 1;
+      }
       .pos-order {
         width: 300px;
         background: #f8f9fa;
@@ -69,7 +96,9 @@
         border-bottom: 1px solid #e9ecef;
         font-size: 13px;
       }
-      .pos-item:last-child { border-bottom: none; }
+      .pos-item:last-child {
+        border-bottom: none;
+      }
       .order-line {
         display: flex;
         justify-content: space-between;
@@ -78,7 +107,9 @@
         font-size: 13px;
         border-bottom: 1px solid #e9ecef;
       }
-      .order-line:last-child { border-bottom: none; }
+      .order-line:last-child {
+        border-bottom: none;
+      }
       .order-line button {
         background: none;
         border: none;
@@ -102,22 +133,27 @@
   <body>
     <nav class="navbar navbar-dark bg-dark px-3 py-2 mb-0">
       <span class="navbar-brand mb-0 h1">
-        <i class="bi bi-egg-fried me-2"></i>Hamburg Inn
+        <a class="home-link" href="./index.html">
+          <i class="bi bi-egg-fried me-2"></i>Hamburg Inn
+        </a>
       </span>
       <div class="d-flex align-items-center gap-2" id="status-bar">
-        <span class="badge bg-warning text-dark" id="status-badge">Employee POS</span>
+        <span class="badge bg-warning text-dark" id="status-badge"
+          >Employee POS</span
+        >
         <span class="text-white-50" id="status-text"></span>
       </div>
     </nav>
- 
+
     <div class="container-fluid py-4 px-4">
- 
       <!-- POS ORDER ENTRY -->
       <div class="section-card">
         <div class="card-header">
           <i class="bi bi-cart text-secondary"></i>
           <h5>Place Order</h5>
-          <span class="text-muted ms-auto">Select items and complete the transaction</span>
+          <span class="text-muted ms-auto"
+            >Select items and complete the transaction</span
+          >
         </div>
         <div class="card-body">
           <div id="pos-area">
@@ -125,13 +161,15 @@
           </div>
         </div>
       </div>
- 
+
       <!-- TRANSACTIONS -->
       <div class="section-card">
         <div class="card-header">
           <i class="bi bi-receipt text-secondary"></i>
           <h5>Transactions</h5>
-          <span class="text-muted ms-auto">Your active and completed orders</span>
+          <span class="text-muted ms-auto"
+            >Your active and completed orders</span
+          >
         </div>
         <div class="card-body">
           <div class="table-responsive">
@@ -148,48 +186,70 @@
                 </tr>
               </thead>
               <tbody id="tx-body">
-                <tr><td colspan="7" class="text-center text-muted py-3">Loading...</td></tr>
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-3">
+                    Loading...
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
- 
+
     <!-- Add Modal -->
     <div id="modal-add" class="modal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Add Row</h5>
-            <button type="button" id="btn-close" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              id="btn-close"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body"><div id="new-tuple"></div></div>
           <div class="modal-footer">
-            <button id="close-add-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button id="add-btn" type="button" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Add</button>
+            <button
+              id="close-add-modal"
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button id="add-btn" type="button" class="btn btn-primary">
+              <i class="bi bi-plus-circle"></i> Add
+            </button>
           </div>
         </div>
       </div>
     </div>
- 
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/table_output.js"></script>
     <script>
       const API_BASE = "http://127.0.0.1:8000/crud";
       let menuData = null;
       window.currentOrder = [];
- 
+
       function fmt(val, type) {
         if (val === null || val === undefined) return "—";
         if (type === "money") return "$" + parseFloat(val).toFixed(2);
-        if (type === "dt") return new Date(val).toLocaleString("en-US", {
-          month: "short", day: "numeric", year: "numeric",
-          hour: "numeric", minute: "2-digit"
-        });
+        if (type === "dt")
+          return new Date(val).toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+          });
         return val;
       }
- 
+
       async function loadEmployee() {
         try {
           const res = await fetch(API_BASE + "/employee_role");
@@ -203,34 +263,53 @@
             `<div class="text-danger"><i class="bi bi-wifi-off me-1"></i>Could not reach backend: ${e.message}</div>`;
         }
       }
- 
+
       function renderPOS(data) {
-        const items = menuData.data.map(r => ({ id: r[0], name: r[1], price: parseFloat(r[2]) }));
+        const items = menuData.data.map((r) => ({
+          id: r[0],
+          name: r[1],
+          price: parseFloat(r[2]),
+        }));
         const subtypes = ["Entree", "Appetizer", "Side", "Drink", "Milkshake"];
         const typeMap = {};
-        subtypes.forEach(sub => {
-          if (data[sub]) data[sub].data.forEach(r => { typeMap[r[0]] = sub; });
+        subtypes.forEach((sub) => {
+          if (data[sub])
+            data[sub].data.forEach((r) => {
+              typeMap[r[0]] = sub;
+            });
         });
- 
-        const grouped = { Entree: [], Appetizer: [], Side: [], Drink: [], Milkshake: [] };
-        items.forEach(item => {
+
+        const grouped = {
+          Entree: [],
+          Appetizer: [],
+          Side: [],
+          Drink: [],
+          Milkshake: [],
+        };
+        items.forEach((item) => {
           const t = typeMap[item.id] || "Entree";
           if (grouped[t]) grouped[t].push(item);
         });
- 
-        const menuHTML = Object.entries(grouped).map(([cat, items]) => {
-          if (!items.length) return "";
-          return `
+
+        const menuHTML = Object.entries(grouped)
+          .map(([cat, items]) => {
+            if (!items.length) return "";
+            return `
             <div class="menu-category-title">${cat}s</div>
-            ${items.map(item => `
+            ${items
+              .map(
+                (item) => `
               <div class="pos-item">
                 <span>${item.name}</span>
                 <button class="btn btn-sm btn-outline-primary" onclick="addToOrder(${item.id}, '${item.name}', ${item.price})">
                   + $${item.price.toFixed(2)}
                 </button>
-              </div>`).join("")}`;
-        }).join("");
- 
+              </div>`,
+              )
+              .join("")}`;
+          })
+          .join("");
+
         document.getElementById("pos-area").innerHTML = `
           <div class="pos-container">
             <div class="pos-menu">${menuHTML}</div>
@@ -248,12 +327,12 @@
             </div>
           </div>`;
       }
- 
+
       function addToOrder(id, name, price) {
         window.currentOrder.push({ id, name, price });
         renderOrder();
       }
- 
+
       function renderOrder() {
         const div = document.getElementById("order-items");
         if (!window.currentOrder.length) {
@@ -262,61 +341,81 @@
           return;
         }
         let total = 0;
-        div.innerHTML = window.currentOrder.map((item, i) => {
-          total += item.price;
-          return `<div class="order-line">
+        div.innerHTML = window.currentOrder
+          .map((item, i) => {
+            total += item.price;
+            return `<div class="order-line">
             <span>${item.name} <span class="text-muted">$${item.price.toFixed(2)}</span></span>
             <button onclick="removeFromOrder(${i})"><i class="bi bi-x"></i></button>
           </div>`;
-        }).join("");
-        document.getElementById("order-total").textContent = "$" + total.toFixed(2);
+          })
+          .join("");
+        document.getElementById("order-total").textContent =
+          "$" + total.toFixed(2);
       }
- 
+
       function removeFromOrder(index) {
         window.currentOrder.splice(index, 1);
         renderOrder();
       }
- 
+
       async function finalizeOrder() {
-        if (!window.currentOrder.length) { alert("No items in order"); return; }
- 
+        if (!window.currentOrder.length) {
+          alert("No items in order");
+          return;
+        }
+
         const response = await fetch(`${API_BASE}/create_order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            items: window.currentOrder.map(i => ({ id: i.id, name: i.name, price: i.price })),
-            employee_id: 1
+            items: window.currentOrder.map((i) => ({
+              id: i.id,
+              name: i.name,
+              price: i.price,
+            })),
+            employee_id: 1,
           }),
         });
- 
-        if (!response.ok) { alert("Failed to create transaction"); return; }
+
+        if (!response.ok) {
+          alert("Failed to create transaction");
+          return;
+        }
         const data = await response.json();
-        if (data.error) { alert("Error: " + data.error); return; }
- 
+        if (data.error) {
+          alert("Error: " + data.error);
+          return;
+        }
+
         window.currentOrder = [];
         renderOrder();
         await loadEmployee();
         alert("Order completed! Transaction ID: " + data.transaction_id);
       }
- 
+
       function renderTransactions(tx) {
         if (!tx) return;
         const tbody = document.getElementById("tx-body");
         if (!tx.data.length) {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">No transactions yet</td></tr>';
+          tbody.innerHTML =
+            '<tr><td colspan="7" class="text-center text-muted py-3">No transactions yet</td></tr>';
           return;
         }
-        tbody.innerHTML = tx.data.map(row => {
-          const [tid, ts, total, payment, empId, tips, status] = row;
-          const statusBadge = (status || "").toLowerCase() === "completed"
-            ? '<span class="badge bg-success">completed</span>'
-            : '<span class="badge bg-warning text-dark">pending</span>';
-          const completeBtn = (status || "").toLowerCase() !== "completed"
-            ? `<button class="btn btn-success btn-sm" onclick="completeTransaction(${tid})">
+        tbody.innerHTML = tx.data
+          .map((row) => {
+            const [tid, ts, total, payment, empId, tips, status] = row;
+            const statusBadge =
+              (status || "").toLowerCase() === "completed"
+                ? '<span class="badge bg-success">completed</span>'
+                : '<span class="badge bg-warning text-dark">pending</span>';
+            const completeBtn =
+              (status || "").toLowerCase() !== "completed"
+                ? `<button class="btn btn-success btn-sm" onclick="completeTransaction(${tid})">
                 <i class="bi bi-check me-1"></i>Complete
                </button>`
-            : "—";
-          return `<tr>
+                : "—";
+            return `<tr>
             <td class="text-muted">#${tid}</td>
             <td class="text-muted">${fmt(ts, "dt")}</td>
             <td class="fw-semibold">${fmt(total, "money")}</td>
@@ -325,14 +424,17 @@
             <td class="text-muted">${empId || "—"}</td>
             <td>${completeBtn}</td>
           </tr>`;
-        }).join("");
+          })
+          .join("");
       }
- 
+
       async function completeTransaction(transactionId) {
-        await fetch(`${API_BASE}/complete_transaction/${transactionId}`, { method: "PUT" });
+        await fetch(`${API_BASE}/complete_transaction/${transactionId}`, {
+          method: "PUT",
+        });
         await loadEmployee();
       }
- 
+
       loadEmployee();
     </script>
   </body>

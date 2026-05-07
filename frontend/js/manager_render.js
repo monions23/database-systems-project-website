@@ -224,8 +224,6 @@ function renderDashboardStats() {
 
   const customer = rows[0]; // [total_tx, total_rev, avg_val, pending_count]
   const popular = rows[1]; // [popular_item, count]
-  const coffee = rows[2]; // [avg_coffee_refills]
-  const addons = rows[3]; // [avg_add_ons]
 
   // Customer stats
   document.getElementById("stat-tx-count").textContent = customer[0];
@@ -240,25 +238,15 @@ function renderDashboardStats() {
   document.getElementById("stat-tx-pending").textContent = customer[3];
 
   // Key order times
-  const kot = rows[4]; // [avg_bf_cutoff, avg_chicken_soldout]
+  const kot = rows[2]; // [avg_bf_cutoff, avg_chicken_soldout]
   console.log(kot);
 
-  document.getElementById("stat-kot-bf-avg").textContent = kot[8];
-  document.getElementById("stat-kot-ch-avg").textContent = kot[9];
+  document.getElementById("stat-kot-bf-avg").textContent = kot[6];
+  document.getElementById("stat-kot-ch-avg").textContent = kot[7];
 
   // Popular item (you need an HTML ID for this — see below)
   const popularEl = document.getElementById("stat-popular-item");
   if (popularEl) popularEl.textContent = popular[0];
-
-  // Coffee refills → uses your existing ID
-  document.getElementById("stat-refills").textContent = parseFloat(
-    coffee[0] || 0,
-  ).toFixed(2);
-
-  // Add-ons → already correct
-  document.getElementById("stat-addons").textContent = parseFloat(
-    addons[0] || 0,
-  ).toFixed(2);
 }
 
 loadAll();

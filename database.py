@@ -115,6 +115,63 @@ def delete_from_relation(rel: str, delete_params: dict):
             cursor.execute(query, values)
         mycon.commit()
 
+def perform_transaction_join():
+    with connect() as mycon:
+        with mycon.cursor() as cursor:
+            cursor.execute("SELECT * FROM Customer_Transaction t JOIN Complete_Order_Summary s WHERE t.transaction_id = s.transaction_id ORDER BY timestamp DESC;")
+            rows = cursor.fetchall()
+            col_name = cursor.column_names # get column names
+            df = pd.DataFrame(rows, columns=col_name)
+            return df.to_dict(orient="split")
+        
+def get_dashboard_stats():
+    customer_orders_query = """
+    SELECT 
+        COUNT(transaction_id) as total_tx,
+        SUM(total_amount) as total_rev,
+        AVG(total_amount) as avg_val,
+        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_count
+    FROM Customer_Transaction;
+    """
+    popular_item_query = """SELECT most_popular_item, COUNT(*) AS count
+        FROM Events
+        WHERE most_popular_item IS NOT NULL
+        GROUP BY most_popular_item
+        ORDER BY count DESC
+        LIMIT 1;
+    """
+    refills_query = """SELECT 
+            AVG(io.refill) AS avg_coffee_refills
+        FROM Individual_Order io
+        JOIN Menu_Item mi ON mi.menu_item_id = io.menu_item_id
+        WHERE mi.item_name = 'Coffee' AND io.refill = 'True';
+    """
+    addons_query = """
+        SELECT avg(add_ons_bought) AS avg_add_ons FROM Complete_Order_Summary;"""
+    times_query = """
+        SELECT
+            DATE_FORMAT(
+                SEC_TO_TIME(AVG(CASE WHEN last_breakfast_order = TRUE THEN TIME_TO_SEC(`timestamp`) END)),
+                '%h:%i %p'
+            ) AS avg_last_breakfast_cutoff,
+            DATE_FORMAT(
+                SEC_TO_TIME(AVG(CASE WHEN fried_chicken_sold_out = TRUE THEN TIME_TO_SEC(`timestamp`) END)),
+                '%h:%i %p'
+            ) AS avg_chicken_soldout
+        FROM Key_Order_Times;
+        """
+    with connect() as mycon:
+        import pandas as pd
+        df = pd.concat([
+            pd.read_sql(customer_orders_query, mycon),
+            pd.read_sql(popular_item_query, mycon),
+            pd.read_sql(refills_query, mycon),
+            pd.read_sql(addons_query, mycon),
+            pd.read_sql(times_query, mycon),
+        ], ignore_index=True)
+        df = df.fillna(0)
+        return df.to_dict(orient="split")
+
 
 
 # TEST QUERIES

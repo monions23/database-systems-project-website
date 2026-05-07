@@ -2,19 +2,31 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List
 from datetime import datetime
-from database import connect
-
-# Import necessary database functions
-from database import delete_from_relation, get_all_relations_for_role, get_privileges, insert_into_relation, update_relation
+from database import connect, get_dashboard_stats, delete_from_relation, get_all_relations_for_role, get_privileges, insert_into_relation, perform_transaction_join, update_relation
 
 
 crud_router = APIRouter()
+
+@crud_router.get("/transactions-summary")
+async def transaction_summary():
+    try:
+        # Call the function you just wrote
+        data = perform_transaction_join() 
+        return data
+    except Exception as e:
+        return {"error": str(e)}
+    
+@crud_router.get("/dashboard-stats")
+async def dashboard_stats():
+    return get_dashboard_stats()
+
 
 # Show all relation data
 @crud_router.get("/{role_name}")
 async def get_all_view_data(role_name: str):
     role_rels = get_all_relations_for_role(role_name)
     return role_rels
+
 
 @crud_router.get("/{role_name}/privileges")
 async def get_privilege_info(role_name: str):

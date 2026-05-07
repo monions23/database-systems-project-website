@@ -64,7 +64,11 @@ CREATE TABLE Key_Order_Times (
  
 -- Customer Transaction
 CREATE TABLE Customer_Transaction (
+<<<<<<< HEAD
     transaction_id INT PRIMARY KEY,
+=======
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+>>>>>>> origin/CustomerEmployee
     timestamp DATETIME,
     total_amount DECIMAL(10, 2),
     payment_method VARCHAR(50),
@@ -77,7 +81,11 @@ CREATE TABLE Customer_Transaction (
  
 -- Individual Order
 CREATE TABLE Individual_Order (
+<<<<<<< HEAD
     item_ordered_id INT PRIMARY KEY,
+=======
+    item_ordered_id INT AUTO_INCREMENT PRIMARY KEY,
+>>>>>>> origin/CustomerEmployee
     transaction_id INT,
     menu_item_id INT,
     add_ons INTEGER,
@@ -622,3 +630,6 @@ GRANT SELECT                          ON hamburg_inn.Drink                  TO '
 GRANT SELECT                          ON hamburg_inn.Appetizer              TO 'customer_role';
 GRANT SELECT                          ON hamburg_inn.Milkshake              TO 'customer_role';
 GRANT SELECT                          ON hamburg_inn.Events                 TO 'customer_role';
+
+ALTER TABLE Customer_Transaction
+ADD COLUMN status VARCHAR(20) DEFAULT 'pending';

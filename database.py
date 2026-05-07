@@ -28,7 +28,7 @@ def get_privileges(user_name: str):
             # loop through grants, and use split functions to find user privileges for corresponding relation
             # add result to relation_privileges dictionary
             for grant in grants:
-                grant_statement = grant[0]
+                grant_statement = grant[0];
                 if "`hamburg_inn`.`" in grant_statement and "` TO" in grant_statement:
                     relation = grant_statement.split("`hamburg_inn`.`")[1].split("` TO")[0]
                     relation = relation.title() # make sure relation is in title case
@@ -55,20 +55,19 @@ def get_all_relations_for_role(role_name: str):
 ### CREATE OPERATION FUNCTION
 def insert_into_relation(rel: str, data: dict):
 
-    # preprocess data
     cols = ", ".join(data.keys())
     placeholders = ", ".join(["%s"] * len(data))
     values = list(data.values())
 
-    # define query
     query = f"INSERT INTO `{rel}` ({cols}) VALUES ({placeholders})"
 
-    # connect to database, open cursor, and execute query
     with connect() as mycon:
         with mycon.cursor() as cursor:
-            cursor.execute(query, values)   # <-- THIS IS REQUIRED
+            cursor.execute(query, values)
+            new_id = cursor.lastrowid   # 🔥 THIS IS THE KEY
         mycon.commit()
-        
+
+    return new_id
 ### RETRIEVE OPERATION FUNCTION
 ### RETURNS A PANDAS DATAFRAME AS A DICT
 def get_relation(rel: str, select_params: str = "*"):

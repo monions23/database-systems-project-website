@@ -35,3 +35,90 @@ body {
 #table-cell:last-child {
   border-right: none;
 }
+/* ─── Customer Menu Styling ───────────────────────── */
+
+.menu-container {
+  display: flex;
+  gap: 60px;
+  padding: 40px;
+  background: #f8f5f0;
+}
+
+/* each “page” */
+.menu-page {
+  flex: 1;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+/* section titles */
+.menu-section {
+  margin-bottom: 30px;
+}
+
+.menu-section h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 4px;
+}
+
+/* menu rows */
+.menu-item {
+  display: flex;
+  justify-content: space-between; /* pushes name left, price right */
+  align-items: center;
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* name */
+.item-name {
+  white-space: nowrap;
+}
+
+/* price */
+.item-price {
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.pos-container {
+  display: flex;
+  gap: 40px;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+}
+
+/* menu side */
+.pos-menu {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* order side */
+.pos-order {
+  flex: 1;
+  background: #f8f8f8;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* menu items */
+.pos-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+/* order line */
+.order-line {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}

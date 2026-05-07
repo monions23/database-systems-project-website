@@ -89,40 +89,38 @@ function renderTransactions(joinedObj) {
   const tbody = document.getElementById("tx-body");
   if (!joinedObj || !joinedObj.data) return;
 
+  // Build column name -> index map
+  const col = {};
+  joinedObj.columns.forEach((name, i) => { col[name] = i; });
+  console.log("Transaction columns:", joinedObj.columns); // remove after confirming
+
   const rows = joinedObj.data;
   let totalRevenue = 0;
   let pendingCount = 0;
 
-  tbody.innerHTML = rows
-    .map((row) => {
-      // Destructuring based on the SELECT * or specific JOIN order
-      const [
-        tid,
-        ts,
-        total,
-        payMethod,
-        empId,
-        tips,
-        status,
-        _skip,
-        apps,
-        ents,
-        sides,
-        drinks,
-        shakes,
-        addons,
-        refills,
-      ] = row;
+  tbody.innerHTML = rows.map((row) => {
+    const tid      = row[col["transaction_id"]];
+    const ts       = row[col["timestamp"]];
+    const total    = row[col["total_amount"]];
+    const payMethod = row[col["payment_method"]];
+    const empId    = row[col["employee_id"]];
+    const status   = row[col["status"]];
+    const apps     = row[col["appetizers_bought"]];
+    const ents     = row[col["entrees_bought"]];
+    const sides    = row[col["sides_bought"]];
+    const drinks   = row[col["drinks_bought"]];
+    const shakes   = row[col["milkshakes_bought"]];
+    const addons   = row[col["add_ons_bought"]];
+    const refills  = row[col["refills"]];
 
-      totalRevenue += parseFloat(total || 0);
-      if ((status || "").toLowerCase() === "pending") pendingCount++;
+    totalRevenue += parseFloat(total || 0);
+    if ((status || "").toLowerCase() === "pending") pendingCount++;
 
-      const statusBadge =
-        (status || "").toLowerCase() === "completed"
-          ? '<span class="badge bg-success">completed</span>'
-          : '<span class="badge bg-warning text-dark">pending</span>';
+    const statusBadge = (status || "").toLowerCase() === "completed"
+      ? '<span class="badge bg-success">completed</span>'
+      : '<span class="badge bg-warning text-dark">pending</span>';
 
-      return `
+    return `
       <tr>
         <td class="text-muted">#${tid}</td>
         <td>${fmt(ts, "dt")}</td>
@@ -130,16 +128,15 @@ function renderTransactions(joinedObj) {
         <td>${payMethod}</td>
         <td>${statusBadge}</td>
         <td>${empId}</td>
-        <td class="text-center">${ents || 0}</td>
-        <td class="text-center">${apps || 0}</td>
-        <td class="text-center">${sides || 0}</td>
-        <td class="text-center">${drinks || 0}</td>
-        <td class="text-center">${shakes || 0}</td>
-        <td class="text-center">${addons || 0}</td>
-        <td class="text-center">${refills || 0}</td>
+        <td class="text-center">${ents ?? 0}</td>
+        <td class="text-center">${apps ?? 0}</td>
+        <td class="text-center">${sides ?? 0}</td>
+        <td class="text-center">${drinks ?? 0}</td>
+        <td class="text-center">${shakes ?? 0}</td>
+        <td class="text-center">${addons ?? 0}</td>
+        <td class="text-center">${refills ?? 0}</td>
       </tr>`;
-    })
-    .join("");
+  }).join("");
 }
 
 // 3. RENDER EVENTS
@@ -250,3 +247,4 @@ function renderDashboardStats() {
 }
 
 loadAll();
+

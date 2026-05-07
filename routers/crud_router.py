@@ -56,11 +56,11 @@ class OrderItem(BaseModel):
     name: str
     price: float
 
-
 class OrderRequest(BaseModel):
     items: List[OrderItem]
     employee_id: int
 
+# ── Specific routes FIRST ────────────────────────────────────────────────────
 @crud_router.post("/create_order")
 async def create_order(order: OrderRequest):
     conn = None
@@ -70,10 +70,7 @@ async def create_order(order: OrderRequest):
         conn = connect()
         cursor = conn.cursor()
 
-        # 1. calculate total
         total = sum(item.price for item in order.items)
-
-        # 2. use ONE timestamp for consistency
         now = datetime.now().replace(microsecond=0)
 
         cursor.execute("""
@@ -95,7 +92,6 @@ async def create_order(order: OrderRequest):
             cursor.execute("SELECT LAST_INSERT_ID()")
             transaction_id = cursor.fetchone()[0]
 
-        # 5. insert each item into Individual_Order
         for item in order.items:
             cursor.execute("""
                 INSERT INTO Individual_Order 
@@ -122,6 +118,8 @@ async def create_order(order: OrderRequest):
             cursor.close()
         if conn:
             conn.close()
+
+
 @crud_router.put("/complete_transaction/{transaction_id}")
 async def complete_transaction(transaction_id: int):
     conn = None
@@ -138,7 +136,6 @@ async def complete_transaction(transaction_id: int):
         """, (transaction_id,))
 
         conn.commit()
-
         return {"message": "Transaction marked completed"}
 
     except Exception as e:
@@ -151,3 +148,28 @@ async def complete_transaction(transaction_id: int):
             cursor.close()
         if conn:
             conn.close()
+
+
+# ── Generic routes AFTER ─────────────────────────────────────────────────────
+@crud_router.get("/{role_name}")
+async def get_all_view_data(role_name: str):
+    role_rels = get_all_relations_for_role(role_name)
+    return role_rels
+
+@crud_router.get("/{role_name}/privileges")
+async def get_privilege_info(role_name: str):
+    privileges = get_privileges(role_name)
+    return privileges
+
+@crud_router.post("/{rel_name}", status_code=201)
+async def insert_view_data(rel_name: str, data: dict):
+    new_id = insert_into_relation(rel_name, data)
+    return {"transaction_id": new_id}
+
+@crud_router.put("/{tuple_key}")
+async def update_view_data(rel_name: str, items_to_update: dict, update_conditions: dict):
+    update_relation(rel_name, items_to_update, update_conditions)
+
+@crud_router.delete("/{tuple_key}")
+async def delete_view_data(rel: str, delete_conditions: dict):
+    delete_from_relation(rel, delete_conditions)

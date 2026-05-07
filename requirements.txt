@@ -1,6 +1,5 @@
-annotated-doc==0.0.4
 annotated-types==0.7.0
-anyio==4.13.0
+anyio>=4.12.1,<5
 click==8.3.3
 fastapi==0.136.1
 h11==0.16.0
@@ -12,7 +11,7 @@ pydantic==2.13.3
 pydantic_core==2.46.3
 python-dateutil==2.9.0.post0
 six==1.17.0
-starlette==1.0.0
+starlette>=0.27.0,<0.40
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.46.0

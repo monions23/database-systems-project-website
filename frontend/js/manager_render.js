@@ -91,36 +91,40 @@ function renderTransactions(joinedObj) {
 
   // Build column name -> index map
   const col = {};
-  joinedObj.columns.forEach((name, i) => { col[name] = i; });
+  joinedObj.columns.forEach((name, i) => {
+    col[name] = i;
+  });
   console.log("Transaction columns:", joinedObj.columns); // remove after confirming
 
   const rows = joinedObj.data;
   let totalRevenue = 0;
   let pendingCount = 0;
 
-  tbody.innerHTML = rows.map((row) => {
-    const tid      = row[col["transaction_id"]];
-    const ts       = row[col["timestamp"]];
-    const total    = row[col["total_amount"]];
-    const payMethod = row[col["payment_method"]];
-    const empId    = row[col["employee_id"]];
-    const status   = row[col["status"]];
-    const apps     = row[col["appetizers_bought"]];
-    const ents     = row[col["entrees_bought"]];
-    const sides    = row[col["sides_bought"]];
-    const drinks   = row[col["drinks_bought"]];
-    const shakes   = row[col["milkshakes_bought"]];
-    const addons   = row[col["add_ons_bought"]];
-    const refills  = row[col["refills"]];
+  tbody.innerHTML = rows
+    .map((row) => {
+      const tid = row[col["transaction_id"]];
+      const ts = row[col["timestamp"]];
+      const total = row[col["total_amount"]];
+      const payMethod = row[col["payment_method"]];
+      const empId = row[col["employee_id"]];
+      const status = row[col["status"]];
+      const apps = row[col["appetizers_bought"]];
+      const ents = row[col["entrees_bought"]];
+      const sides = row[col["sides_bought"]];
+      const drinks = row[col["drinks_bought"]];
+      const shakes = row[col["milkshakes_bought"]];
+      const addons = row[col["add_ons_bought"]];
+      const refills = row[col["refills"]];
 
-    totalRevenue += parseFloat(total || 0);
-    if ((status || "").toLowerCase() === "pending") pendingCount++;
+      totalRevenue += parseFloat(total || 0);
+      if ((status || "").toLowerCase() === "pending") pendingCount++;
 
-    const statusBadge = (status || "").toLowerCase() === "completed"
-      ? '<span class="badge bg-success">completed</span>'
-      : '<span class="badge bg-warning text-dark">pending</span>';
+      const statusBadge =
+        (status || "").toLowerCase() === "completed"
+          ? '<span class="badge bg-success">completed</span>'
+          : '<span class="badge bg-warning text-dark">pending</span>';
 
-    return `
+      return `
       <tr>
         <td class="text-muted">#${tid}</td>
         <td>${fmt(ts, "dt")}</td>
@@ -136,7 +140,8 @@ function renderTransactions(joinedObj) {
         <td class="text-center">${addons ?? 0}</td>
         <td class="text-center">${refills ?? 0}</td>
       </tr>`;
-  }).join("");
+    })
+    .join("");
 }
 
 // 3. RENDER EVENTS
@@ -235,11 +240,14 @@ function renderDashboardStats() {
   document.getElementById("stat-tx-pending").textContent = customer[3];
 
   // Key order times
-  const kot = rows[2]; // [avg_bf_cutoff, avg_chicken_soldout]
-  console.log(kot);
+  console.log(rows);
+  const last_breakfast = rows[2];
+  const last_chicken = rows[3];
+  console.log(last_breakfast);
+  console.log(last_chicken);
 
-  document.getElementById("stat-kot-bf-avg").textContent = kot[6];
-  document.getElementById("stat-kot-ch-avg").textContent = kot[7];
+  document.getElementById("stat-kot-bf-avg").textContent = last_breakfast[6];
+  document.getElementById("stat-kot-ch-avg").textContent = last_chicken[7];
 
   // Popular item (you need an HTML ID for this — see below)
   const popularEl = document.getElementById("stat-popular-item");
@@ -247,4 +255,3 @@ function renderDashboardStats() {
 }
 
 loadAll();
-

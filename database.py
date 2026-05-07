@@ -141,24 +141,33 @@ def get_dashboard_stats():
         ORDER BY count DESC
         LIMIT 1;
     """
-    times_query = """
+    fried_chicken = """
         SELECT
-            DATE_FORMAT(
-                SEC_TO_TIME(AVG(CASE WHEN last_breakfast_order = TRUE THEN TIME_TO_SEC(`timestamp`) END)),
-                '%h:%i %p'
-            ) AS avg_last_breakfast_cutoff,
-            DATE_FORMAT(
-                SEC_TO_TIME(AVG(CASE WHEN fried_chicken_sold_out = TRUE THEN TIME_TO_SEC(`timestamp`) END)),
-                '%h:%i %p'
-            ) AS avg_chicken_soldout
-        FROM Key_Order_Times;
+            DATE_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(time_to_sellout))), '%h:%i %p') AS avg_time_to_sellout
+        FROM v_fried_chicken_sellout;
+        """
+    last_breakfast = """
+        SELECT DATE_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TIME(last_breakfast_per_day)))), '%h:%i %p') AS avg_last_breakfast_time
+        FROM (
+            SELECT DATE(ct.timestamp) AS order_date,
+                MAX(ct.timestamp) AS last_breakfast_per_day
+            FROM Customer_Transaction ct
+            JOIN Individual_Order io
+            ON ct.transaction_id = io.transaction_id
+            JOIN Menu_Item mi
+            ON io.menu_item_id = mi.menu_item_id
+            WHERE mi.is_breakfast = TRUE
+            AND DAYOFWEEK(ct.timestamp) BETWEEN 2 AND 6
+            GROUP BY DATE(ct.timestamp)
+        ) AS daily_last;
         """
     with connect() as mycon:
         import pandas as pd
         df = pd.concat([
             pd.read_sql(customer_orders_query, mycon),
             pd.read_sql(popular_item_query, mycon),
-            pd.read_sql(times_query, mycon),
+            pd.read_sql(fried_chicken, mycon),
+            pd.read_sql(last_breakfast, mycon),
         ], ignore_index=True)
         df = df.fillna(0)
         return df.to_dict(orient="split")
